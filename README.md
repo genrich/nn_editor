@@ -1,2 +1,1 @@
-nn_editor
-=========
+visual\_nn generative model editor
