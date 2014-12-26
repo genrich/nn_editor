@@ -1,0 +1,19 @@
+body
+{
+    font-family:      arial, sans-serif;
+    font-size:        14px;
+    background-color: #aaa;
+    margin:           0;
+    overflow:         hidden;
+    margin:           0;
+    padding:          0;
+}
+
+#viewport
+{
+    position: absolute;
+    top:      0;
+    left:     0;
+    right:    0;
+    bottom:   0;
+}
