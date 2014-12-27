@@ -7,6 +7,13 @@ import nn.editor.model.Neuron
 import nn.editor.model.Box
 import nn.editor.model.Point
 
+@GET("/")
+class Index extends Action {
+  def execute() {
+    respondView()
+  }
+}
+
 @GET("neuron")
 @Swagger(
   Swagger.Resource("neuron", "APIs to edit neuron configuration"),

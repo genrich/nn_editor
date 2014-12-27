@@ -14,11 +14,20 @@ libraryDependencies := Seq(
   "com.typesafe.slick" %% "slick"           % "2.1.0",
   "org.hsqldb"         %  "hsqldb"          % "2.3.2"           % "test",
   "tv.cntt"            %% "xitrum"          % "3.21",
+  "tv.cntt"            %% "xitrum-scalate"  % "2.3",
   "ch.qos.logback"     %  "logback-classic" % "1.1.2",
   "org.scalatest"      %% "scalatest"       % "2.2.1"           % "test"
 )
 
-mappings in Universal ++= contentOf("src/main/resources")
+seq(scalateSettings:_*)
+
+ScalateKeys.scalateTemplateConfig in Compile := Seq(TemplateConfig(
+  baseDirectory.value / "src" / "main" / "scalate",
+  Seq(),
+  Seq(Binding("helper", "xitrum.Action", true))
+))
+
+watchSources ++= ((baseDirectory.value / "src" / "universal") ** ("*.conf" || "*.xml" || "*.js" || "*.css")).get
 
 scriptClasspath += "../config"
 
