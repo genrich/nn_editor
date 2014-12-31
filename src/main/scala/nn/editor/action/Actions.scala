@@ -25,11 +25,13 @@ class Index extends Action {
 class NeuronApi extends Action {
   def execute {
     val neuron = new Neuron(
+      None,
+      "neuron1",
       boundingBox = new Box(
         minCorner = new Point(0, 0, 0),
         maxCorner = new Point(10, 10, 10)),
       nodeCount = 10)
-    
+
     respondJson(neuron)
   }
 }
