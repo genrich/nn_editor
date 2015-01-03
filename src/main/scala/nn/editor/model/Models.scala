@@ -44,7 +44,7 @@ object DDLS {
   def main(args: Array[String]) {
     val file = new File(args(0))
     new File(file.getParent).mkdirs
-    val contents = new NeuronDAO(PostgresDriver).ddl.createStatements.mkString("\n")
+    val contents = new NeuronDAO(PostgresDriver).ddl.createStatements.mkString(";\n")
     val writer   = new PrintWriter(file)
     writer write contents
     writer.close
