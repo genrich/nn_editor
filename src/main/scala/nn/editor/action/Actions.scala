@@ -8,11 +8,12 @@ import java.net.URI
 import scala.slick.driver.PostgresDriver
 import Database.dynamicSession
 import io.netty.handler.codec.http.HttpMethod
-import xitrum.validator.Range
+import xitrum.validator.{Min, Range}
 
 object Bounds {
   val lower = -100.0
   val upper =  100.0
+  val diff  =  10.0
 }
 
 @GET("")
@@ -52,6 +53,10 @@ class NeuronApi extends Action with SkipCsrfCheck {
           Range(Bounds.lower, Bounds.upper).exception("maxCorner.x", x2)
           Range(Bounds.lower, Bounds.upper).exception("maxCorner.y", y2)
           Range(Bounds.lower, Bounds.upper).exception("maxCorner.z", z2)
+
+          Min(Bounds.diff).exception("maxCorner.x - minCorner.x", x2 - x1)
+          Min(Bounds.diff).exception("maxCorner.y - minCorner.y", y2 - y1)
+          Min(Bounds.diff).exception("maxCorner.z - minCorner.z", z2 - z1)
 
           Range(10, 100).exception("nodeCount", nodeCount)
 
