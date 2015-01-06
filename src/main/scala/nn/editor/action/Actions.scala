@@ -16,13 +16,6 @@ object Bounds {
   val diff  =  10.0
 }
 
-@GET("")
-class Index extends Action {
-  def execute() {
-    respondView()
-  }
-}
-
 @GET("neuron")
 @POST("neuron")
 @Swagger(

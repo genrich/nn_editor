@@ -24,7 +24,6 @@ lazy val nn_editor = (project in file(".")).
       "com.typesafe.slick" %% "slick"           % "2.1.0",
       "com.h2database"     %  "h2"              % "1.4.184"         % Test,
       "tv.cntt"            %% "xitrum"          % "3.21",
-      "tv.cntt"            %% "xitrum-scalate"  % "2.3",
       "ch.qos.logback"     %  "logback-classic" % "1.1.2",
       "org.scalatest"      %% "scalatest"       % "2.2.1"           % Test),
     watchSources ++= ((baseDirectory.value / "src" / "universal") ** ("*.conf" || "*.xml" || "*.js" || "*.css")).get,
@@ -34,9 +33,4 @@ lazy val nn_editor = (project in file(".")).
         print("\u0007")
         throw inc
       case Value(v) =>
-        v }).
-  settings(scalateSettings: _*).
-  settings(ScalateKeys.scalateTemplateConfig in Compile := Seq(TemplateConfig(
-      baseDirectory.value / "src" / "main" / "scalate",
-      Seq(),
-      Seq(Binding("helper", "xitrum.Action", true)))))
+        v })
