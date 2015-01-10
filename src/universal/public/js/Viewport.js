@@ -1,7 +1,6 @@
 function Viewport (container)
 {
-    var camera, scene, renderer, controls, light,
-        boundingBox, nodes;
+    var camera, scene, renderer, controls, light;
 
     scene = new THREE.Scene ();
 
@@ -51,7 +50,7 @@ function Viewport (container)
     var minCornerX, minCornerY, minCornerZ, maxCornerX, maxCornerY, maxCornerZ,
         minCornerXidxs = [0, 3, 12, 15], minCornerYidxs = [1, 10, 13, 22], minCornerZidxs = [14, 17, 20, 23],
         maxCornerXidxs = [6, 9, 18, 21], maxCornerYidxs = [4, 7, 16, 19],  maxCornerZidxs = [2, 5, 8, 11],
-        nodePos = [0, 0, 0];
+        boundingBox, nodes, nodePos = [], nodePosAttr, nodeConns;
 
     this.init = function (data)
     {
@@ -78,17 +77,28 @@ function Viewport (container)
         scene.add (boundingBox);
 
         // create nodes
-        const nodeCount = 100;
-        for (var i = 1; i < nodeCount; ++i)
+        nodePos.push (minCornerX + (maxCornerX - minCornerX) / 2,
+                      minCornerY + (maxCornerY - minCornerY) / 2,
+                      minCornerZ + (maxCornerZ - minCornerZ) / 2);
+        for (var i = 1; i < data.nodeCount; ++i)
             nodePos.push (minCornerX + Math.random () * (maxCornerX - minCornerX),
                           minCornerY + Math.random () * (maxCornerY - minCornerY),
                           minCornerZ + Math.random () * (maxCornerZ - minCornerZ));
 
         geometry = new THREE.BufferGeometry ();
-        geometry.addAttribute ('position', new THREE.BufferAttribute (new Float32Array (nodePos), 3));
+        nodePosAttr = new THREE.BufferAttribute (new Float32Array (nodePos), 3);
+        geometry.addAttribute ('position', nodePosAttr);
         material = new THREE.PointCloudMaterial ({ size: 2, color: 0x555555 });
         nodes = new THREE.PointCloud (geometry, material);
         scene.add (nodes);
+
+        // create node connections
+        geometry = new THREE.BufferGeometry ();
+        geometry.addAttribute ('position', nodePosAttr);
+        material = new THREE.LineBasicMaterial ({ color: 0x555555 });
+        nodeConns = new THREE.Line (geometry, material, THREE.LinePieces);
+        makeArbor (0.85);
+        scene.add (nodeConns);
     }
 
     this.updateMinCornerX = function (v) { if (validateLess (v, maxCornerXidxs)) updatePos (v, minCornerXidxs); }
@@ -97,7 +107,7 @@ function Viewport (container)
     this.updateMaxCornerX = function (v) { if (validateMore (v, minCornerXidxs)) updatePos (v, maxCornerXidxs); }
     this.updateMaxCornerY = function (v) { if (validateMore (v, minCornerYidxs)) updatePos (v, maxCornerYidxs); }
     this.updateMaxCornerZ = function (v) { if (validateMore (v, minCornerZidxs)) updatePos (v, maxCornerZidxs); }
-    this.updateNodeCount = function (v) { if (10 <= v && v <= 100) return; }
+    this.updateNodeCount = function (v) { v = Math.round (v); if (10 <= v && v <= 100) updateNodes (v); }
 
     function validateLess (v, idxs)
     {
@@ -130,7 +140,7 @@ function Viewport (container)
             len = nodePos.length / 3,
             minX = boxAttrPos.array[minCornerXidxs[0]],
             minY = boxAttrPos.array[minCornerYidxs[0]],
-            minZ = boxAttrPos.array[minCornerZidxs[0]]
+            minZ = boxAttrPos.array[minCornerZidxs[0]],
             maxX = boxAttrPos.array[maxCornerXidxs[0]],
             maxY = boxAttrPos.array[maxCornerYidxs[0]],
             maxZ = boxAttrPos.array[maxCornerZidxs[0]],
@@ -144,5 +154,107 @@ function Viewport (container)
             nodeAttrPos.array[i * 3 + 2] = minZ + scaleZ * (nodePos[i * 3 + 2] - minCornerZ);
         }
         nodeAttrPos.needsUpdate = true;
+    }
+
+    function updateNodes (newNodeCount)
+    {
+        var nodeAttrPos   = nodes.geometry.attributes.position,
+            newNodeLength = newNodeCount * 3;
+        if (newNodeLength < nodeAttrPos.array.length)
+        {
+            nodePos = nodePos.slice (0, newNodeLength);
+            nodePosAttr = new THREE.BufferAttribute (new Float32Array (nodeAttrPos.array.buffer.slice (0, newNodeLength * 4)), 3);
+            nodes    .geometry.addAttribute ('position', nodePosAttr);
+            nodeConns.geometry.addAttribute ('position', nodePosAttr);
+        }
+        else if (nodeAttrPos.array.length < newNodeLength)
+        {
+            var a         = new Float32Array (newNodeLength),
+                oldCount  = nodeAttrPos.length / 3,
+                oldLength = nodeAttrPos.length;
+            a.set (nodeAttrPos.array);
+            nodePosAttr = new THREE.BufferAttribute (a, 3);
+            nodes    .geometry.addAttribute ('position', nodePosAttr);
+            nodeConns.geometry.addAttribute ('position', nodePosAttr);
+            for (var i = oldCount; i < newNodeCount; ++i)
+                nodePos.push (minCornerX + Math.random () * (maxCornerX - minCornerX),
+                              minCornerY + Math.random () * (maxCornerY - minCornerY),
+                              minCornerZ + Math.random () * (maxCornerZ - minCornerZ));
+            nodes.geometry.attributes.position.array.set (nodePos.slice (oldLength), oldLength);
+            var box = boundingBox.geometry.attributes.position.array;
+            updatePos (box[minCornerXidxs[0]], minCornerXidxs);
+        }
+
+        makeArbor (0.85);
+    }
+
+    function makeArbor (factor)
+    {
+        const count = nodePos.length, connCount = count / 3 - 1;
+        var currIdx   = 0,
+            nodeInfos = new Array (count); // array of triplets: [0] flag processed
+                                           //                    [1] nearest node id
+                                           //                    [2] path length through nearest node
+
+        nodeConns.geometry.addAttribute ('index', new THREE.BufferAttribute (new Uint16Array (connCount * 2), 1));
+        nodeConns.geometry.attributes.index.needsUpdate = true;
+
+        var nodeConnsArr = nodeConns.geometry.attributes.index.array,
+            nodePosArr   = nodePosAttr.array;
+
+        for (var i = 0; i < count; i += 3) { nodeInfos[i] = 0.0; nodeInfos[i + 1] = 0.0; nodeInfos[i + 2] = Number.MAX_VALUE; }
+        nodeInfos[0] = 1; // node 0(center/soma) is processed/ignored
+        nodeInfos[2] = 0; // nearest node for soma is itself => path = 0.0
+
+        for (var connIdx = 0; connIdx < connCount; ++connIdx)
+        {
+            var minIdx = 0, minDistance = Number.MAX_VALUE, pathLengthToCurr = nodeInfos[currIdx + 2];
+
+            for (var probeIdx = 0; probeIdx < count; probeIdx += 3)
+            {
+                if (nodeInfos[probeIdx] == 0) // is not processed
+                {
+                    var d          = dist (currIdx, probeIdx),
+                        pathLength = factor * d + pathLengthToCurr;
+
+                    if (pathLength < nodeInfos[probeIdx + 2]) // closer through current node
+                    {
+                        nodeInfos[probeIdx + 1] = currIdx;              // update nearest node to current
+                        nodeInfos[probeIdx + 2] = d + pathLengthToCurr; // and path length through current
+
+                        if (pathLength < minDistance)
+                        {
+                            minDistance = pathLength;
+                            minIdx      = probeIdx;
+                        }
+                    }
+                    else
+                    {
+                        if (nodeInfos[probeIdx + 2] < minDistance) // probed idx path smaller than currently discoverd path lendth
+                        {
+                            minDistance = nodeInfos[probeIdx + 2]; // remember that path lenth
+                            minIdx      = probeIdx;                // and index
+                        }
+                    }
+                }
+            }
+
+            nodeConnsArr[2 * connIdx]     = minIdx                 / 3;
+            nodeConnsArr[2 * connIdx + 1] = nodeInfos[minIdx + 1]  / 3; // take nearest node of remembered idx
+
+            nodeInfos[minIdx] = 1; // mark nearest node as processed
+            currIdx = minIdx;
+        }
+
+        function dist (aIdx, bIdx)
+        {
+            var deltaX = nodePosArr[bIdx]     - nodePosArr[aIdx],
+                deltaY = nodePosArr[bIdx + 1] - nodePosArr[aIdx + 1],
+                deltaZ = nodePosArr[bIdx + 2] - nodePosArr[aIdx + 2];
+            deltaX *= deltaX;
+            deltaY *= deltaY;
+            deltaZ *= deltaZ;
+            return Math.sqrt (deltaX + deltaY + deltaZ);
+        }
     }
 }
