@@ -36,6 +36,7 @@ function main ()
         maxCorner.add (data.boundingBox.maxCorner, 'z', -100, 100).onChange (viewport.updateMaxCornerZ)
                                                                   .onFinishChange (update (data));
         datGui.add (data, 'nodeCount', 10, 100).onChange (viewport.updateNodeCount).onFinishChange (update (data));
+        datGui.add (data, 'factor', 0.5, 1.0).onChange (viewport.updateFactor).onFinishChange (update (data));
         datGui.open ();
         viewport.init (data)
     });

@@ -25,7 +25,8 @@ class ModelsSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
       boundingBox = new Box(
         minCorner = new Point(0, 0, 0),
         maxCorner = new Point(10, 10, 10)),
-      nodeCount = 10)
+      nodeCount = 10,
+      factor = 0.85)
     val recordsInserted = dao += neuron
     assert(recordsInserted == 1)
   }

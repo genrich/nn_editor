@@ -50,10 +50,12 @@ function Viewport (container)
     var minCornerX, minCornerY, minCornerZ, maxCornerX, maxCornerY, maxCornerZ,
         minCornerXidxs = [0, 3, 12, 15], minCornerYidxs = [1, 10, 13, 22], minCornerZidxs = [14, 17, 20, 23],
         maxCornerXidxs = [6, 9, 18, 21], maxCornerYidxs = [4, 7, 16, 19],  maxCornerZidxs = [2, 5, 8, 11],
-        boundingBox, nodes, nodePos = [], nodePosAttr, nodeConns;
+        boundingBox, nodes, nodePos = [], nodePosAttr, nodeConns, factor;
 
     this.init = function (data)
     {
+        factor = data.factor;
+
         // remember bounding box
         var minCorner = data.boundingBox.minCorner, maxCorner = data.boundingBox.maxCorner;
         minCornerX = minCorner.x; minCornerY = minCorner.y; minCornerZ = minCorner.z;
@@ -97,7 +99,7 @@ function Viewport (container)
         geometry.addAttribute ('position', nodePosAttr);
         material = new THREE.LineBasicMaterial ({ color: 0x555555 });
         nodeConns = new THREE.Line (geometry, material, THREE.LinePieces);
-        makeArbor (0.85);
+        refreshArbor ();
         scene.add (nodeConns);
     }
 
@@ -108,6 +110,7 @@ function Viewport (container)
     this.updateMaxCornerY = function (v) { if (validateMore (v, minCornerYidxs)) updatePos (v, maxCornerYidxs); }
     this.updateMaxCornerZ = function (v) { if (validateMore (v, minCornerZidxs)) updatePos (v, maxCornerZidxs); }
     this.updateNodeCount = function (v) { v = Math.round (v); if (10 <= v && v <= 100) updateNodes (v); }
+    this.updateFactor = function (v) { if (0.5 <= v && v <= 1.0) { factor = v; refreshArbor (); }}
 
     function validateLess (v, idxs)
     {
@@ -185,10 +188,10 @@ function Viewport (container)
             updatePos (box[minCornerXidxs[0]], minCornerXidxs);
         }
 
-        makeArbor (0.85);
+        refreshArbor ();
     }
 
-    function makeArbor (factor)
+    function refreshArbor ()
     {
         const count = nodePos.length, connCount = count / 3 - 1;
         var currIdx   = 0,
@@ -197,7 +200,6 @@ function Viewport (container)
                                            //                    [2] path length through nearest node
 
         nodeConns.geometry.addAttribute ('index', new THREE.BufferAttribute (new Uint16Array (connCount * 2), 1));
-        nodeConns.geometry.attributes.index.needsUpdate = true;
 
         var nodeConnsArr = nodeConns.geometry.attributes.index.array,
             nodePosArr   = nodePosAttr.array;

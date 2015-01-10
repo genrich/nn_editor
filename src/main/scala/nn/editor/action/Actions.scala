@@ -37,7 +37,7 @@ class NeuronApi extends Action with SkipCsrfCheck {
   def execute {
     if (request.getMethod == HttpMethod.POST) {
       requestContentJson[Neuron] match {
-        case Some(neuron @ Neuron(id, _, Box(Point(x1, y1, z1), Point(x2, y2, z2)), nodeCount)) =>
+        case Some(neuron @ Neuron(id, _, Box(Point(x1, y1, z1), Point(x2, y2, z2)), nodeCount, factor)) =>
 
           Range(Bounds.lower, Bounds.upper).exception("minCorner.x", x1)
           Range(Bounds.lower, Bounds.upper).exception("minCorner.y", y1)
@@ -52,6 +52,8 @@ class NeuronApi extends Action with SkipCsrfCheck {
           Min(Bounds.diff).exception("maxCorner.z - minCorner.z", z2 - z1)
 
           Range(10, 100).exception("nodeCount", nodeCount)
+
+          Range(0.5, 1.0).exception("factor", factor)
 
           db.withDynSession {
             (for (n <- dao.neurons if n.id === id) yield n).update (neuron)

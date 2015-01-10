@@ -9,7 +9,7 @@ case class Point(val x: Double, val y: Double, val z: Double)
 
 case class Box(val minCorner: Point, val maxCorner: Point)
 
-case class Neuron(val id: Option[Int], val name: String, val boundingBox: Box, val nodeCount: Int)
+case class Neuron(val id: Option[Int], val name: String, val boundingBox: Box, val nodeCount: Int, val factor: Double)
 
 class NeuronDAO(val driver: JdbcProfile) {
   import driver.simple._
@@ -24,11 +24,12 @@ class NeuronDAO(val driver: JdbcProfile) {
     def maxCornerY = column[Double]("MAX_CORNER_Y")
     def maxCornerZ = column[Double]("MAX_CORNER_Z")
     def nodeCount  = column[Int]   ("NODE_COUNT")
+    def factor     = column[Double]("FACTOR")
 
-    def *           = (id.?, name, boundingBox, nodeCount) <> (Neuron.tupled, Neuron.unapply)
-    def boundingBox = (minCorner, maxCorner)               <> (Box.tupled, Box.unapply)
-    def minCorner   = (minCornerX, minCornerY, minCornerZ) <> (Point.tupled, Point.unapply)
-    def maxCorner   = (maxCornerX, maxCornerY, maxCornerZ) <> (Point.tupled, Point.unapply)
+    def *           = (id.?, name, boundingBox, nodeCount, factor) <> (Neuron.tupled, Neuron.unapply)
+    def boundingBox = (minCorner, maxCorner)                       <> (Box.tupled, Box.unapply)
+    def minCorner   = (minCornerX, minCornerY, minCornerZ)         <> (Point.tupled, Point.unapply)
+    def maxCorner   = (maxCornerX, maxCornerY, maxCornerZ)         <> (Point.tupled, Point.unapply)
   }
 
   val neurons = TableQuery[Neurons]
