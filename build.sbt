@@ -15,7 +15,7 @@ lazy val nn_editor = (project in file(".")).
   settings(
     name                   := "nn_editor",
     version                := "1.0-SNAPSHOT",
-    scalaVersion           := "2.11.4",
+    scalaVersion           := "2.11.5",
     autoScalaLibrary       := false,
     mainClass in Compile   := Some("nn.editor.Main"),
     EclipseKeys.withSource := true,
@@ -23,7 +23,7 @@ lazy val nn_editor = (project in file(".")).
       "org.postgresql"     %  "postgresql"      % "9.3-1102-jdbc41" % Runtime,
       "com.typesafe.slick" %% "slick"           % "2.1.0",
       "com.h2database"     %  "h2"              % "1.4.184"         % Test,
-      "tv.cntt"            %% "xitrum"          % "3.21",
+      "tv.cntt"            %% "xitrum"          % "3.22",
       "ch.qos.logback"     %  "logback-classic" % "1.1.2",
       "org.scalatest"      %% "scalatest"       % "2.2.1"           % Test),
     watchSources ++= ((baseDirectory.value / "src" / "universal") ** ("*.conf" || "*.xml" || "*.js" || "*.css")).get,
