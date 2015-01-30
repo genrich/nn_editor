@@ -11,7 +11,7 @@ import org.scalatest.BeforeAndAfterAll
 class ModelsSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
 
   implicit var session: Session = _
-  implicit var dao = new NeuronDAO(H2Driver)
+  var dao = new NeuronDAO(H2Driver)
 
   override def beforeAll {
     session = Database.forURL("jdbc:h2:mem:test", driver = "org.h2.Driver").createSession
