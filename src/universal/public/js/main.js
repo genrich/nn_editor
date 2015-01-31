@@ -43,8 +43,8 @@ function main ()
         new PathObserver (data, 'boundingBox.maxCorner.y').open ( function () { maxCornerY.updateDisplay (); });
         new PathObserver (data, 'boundingBox.maxCorner.z').open ( function () { maxCornerZ.updateDisplay (); });
 
-        datGui.add (data, 'nodeCount', 10, 100);
-        datGui.add (data, 'factor', 0.5, 1.0);
+        datGui.add (data, 'nodeCount', 10, 100).onChange (viewport.updateNodeCount);
+        datGui.add (data, 'factor', 0.5, 1.0).onChange (viewport.updateFactor);
         datGui.open ();
         viewport.init (data)
     });
