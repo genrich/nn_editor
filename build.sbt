@@ -1,5 +1,3 @@
-import NativePackagerKeys._
-
 val ddls = taskKey[Unit]("DDL statements for prod")
 ddls := {
   (compile in Compile).value
@@ -11,13 +9,14 @@ ddls := {
 }
 
 lazy val nn_editor = (project in file(".")).
-  settings(packageArchetype.java_application: _*).
+  enablePlugins(JavaAppPackaging).
   settings(
     name                   := "nn_editor",
     version                := "1.0-SNAPSHOT",
     scalaVersion           := "2.11.5",
     autoScalaLibrary       := false,
     mainClass in Compile   := Some("nn.editor.Main"),
+    scriptClasspath        += "../config",
     EclipseKeys.withSource := true,
     libraryDependencies    := Seq(
       "org.postgresql"     %  "postgresql"      % "9.3-1102-jdbc41" % Runtime,
@@ -27,7 +26,6 @@ lazy val nn_editor = (project in file(".")).
       "ch.qos.logback"     %  "logback-classic" % "1.1.2",
       "org.scalatest"      %% "scalatest"       % "2.2.1"           % Test),
     watchSources ++= ((baseDirectory.value / "src" / "universal") ** ("*.conf" || "*.xml" || "*.js" || "*.css")).get,
-    scriptClasspath += "../config",
     test <<= test in Test mapR {
       case Inc(inc: Incomplete) =>
         print("\u0007")
