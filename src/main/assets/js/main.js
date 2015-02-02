@@ -1,7 +1,7 @@
-"use strict";
-
 function main ()
 {
+    "use strict";
+
     if (!Detector.webgl)
     {
         $('body').empty ();
@@ -46,7 +46,7 @@ function main ()
         datGui.add (data, 'nodeCount', 10, 100).onChange (viewport.updateNodeCount);
         datGui.add (data, 'factor', 0.5, 1.0).onChange (viewport.updateFactor);
         datGui.open ();
-        viewport.init (data)
+        viewport.init (data);
     });
 
     function update (data)

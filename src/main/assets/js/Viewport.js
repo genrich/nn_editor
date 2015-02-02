@@ -1,7 +1,7 @@
-"use strict";
-
 function Viewport (container)
 {
+    "use strict";
+
     var camera, scene, renderer, controls, light,
         raycaster = new THREE.Raycaster (),
         mouse     = new THREE.Vector2 (-1, -1),
@@ -36,8 +36,6 @@ function Viewport (container)
     raycaster.linePrecision = 5;
 
     var minCornerX, minCornerY, minCornerZ, maxCornerX, maxCornerY, maxCornerZ,
-        minCornerXidxs = [0, 3, 12, 15], minCornerYidxs = [1, 10, 13, 22], minCornerZidxs = [14, 17, 20, 23],
-        maxCornerXidxs = [6, 9, 18, 21], maxCornerYidxs = [4, 7, 16, 19],  maxCornerZidxs = [2, 5, 8, 11],
         nodePos = [], nodePosAttr, nodeConns, factor;
 
     this.init = function (data)
@@ -117,7 +115,7 @@ function Viewport (container)
         light.position.copy (camera.position);
         light.target.position.copy (controls.target);
         light.target.updateMatrixWorld ();
-    };
+    }
 
     function updateNodes (newNodeCount)
     {
@@ -171,7 +169,7 @@ function Viewport (container)
 
             for (var probeIdx = 0; probeIdx < count; probeIdx += 3)
             {
-                if (nodeInfos[probeIdx] == 0) // is not processed
+                if (nodeInfos[probeIdx] === 0) // is not processed
                 {
                     var d          = dist (currIdx, probeIdx),
                         pathLength = factor * d + pathLengthToCurr;

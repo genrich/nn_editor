@@ -1,7 +1,7 @@
-"use strict";
-
 function BoundingBoxControls (object3d, model, controls, camera)
 {
+    "use strict";
+
     THREE.Object3D.call (this);
 
     //   1____2
@@ -9,8 +9,7 @@ function BoundingBoxControls (object3d, model, controls, camera)
     // | 0__|_3   minCorner=0
     // 4/___7/
 
-    var that = this,                // 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
-        indicesArr = new Uint16Array ([0, 1, 0, 4, 0, 3, 5, 1, 5, 4, 5, 6, 2, 1, 2, 6, 2, 3, 7, 6, 7, 4, 7, 3]),
+    var indicesArr = new Uint16Array ([0, 1, 0, 4, 0, 3, 5, 1, 5, 4, 5, 6, 2, 1, 2, 6, 2, 3, 7, 6, 7, 4, 7, 3]),
         affectedAxes =                [1, 4, 2, 5, 0, 3, 5, 2, 4, 1, 0, 3, 3, 0, 2, 5, 4, 1, 1, 4, 3, 0, 5, 2], // minX=0, minY=1, minZ=2
         affectedAxis,                                                                                           // maxX=3, maxY=4, maxZ=5
         minCornerXidxs = [0, 3, 12, 15], minCornerYidxs = [1, 10, 13, 22], minCornerZidxs = [2, 5, 8, 11],
@@ -144,7 +143,7 @@ function BoundingBoxControls (object3d, model, controls, camera)
         mouseLast.set (evnt.clientX, evnt.clientY);
     }
 
-    function onMouseUp (evnt)
+    function onMouseUp ()
     {
         isResizing = false;
 
@@ -242,7 +241,7 @@ function BoundingBoxControls (object3d, model, controls, camera)
 
     function hideControlBox ()
     {
-        if (controlBox.material.opacity != 0 && hideTween === undefined)
+        if (controlBox.material.opacity !== 0 && hideTween === undefined)
         {
             hideTween = new TWEEN.Tween (controlBox.material).to ({ opacity: 0 }, 1000)
             .onStop     (function () { hideTween = undefined; })
