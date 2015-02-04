@@ -8,7 +8,7 @@ ddls := {
   toError(r.run("nn.editor.model.DDLS", cp, Array(s"${src}/main/sql/ddls.sql"), s.log))
 }
 
-def assetFilter(dir:String, excludeSuffix:String, ends:String) = new SimpleFileFilter({f =>
+def assetFilter(dir: String, excludeSuffix: String, ends: String) = new SimpleFileFilter({f =>
     f.getPath.startsWith(dir) && !HiddenFileFilter.accept(f) && f.isFile &&
     !f.getName.endsWith(excludeSuffix) && f.getName.endsWith(ends)})
 
@@ -45,12 +45,12 @@ lazy val nn_editor = (project in file(".")).
 
     pipelineStages := Seq(cssCompress, uglify),
 
-    includeFilter in uglify      := assetFilter(((sourceDirectory in Assets).value / "js")    .getPath, "min.js",                 ".js"),
-    includeFilter in cssCompress := assetFilter(((sourceDirectory in Assets).value / "styles").getPath, CssCompress.suffix.value, ".css"),
+    includeFilter in uglify      := assetFilter(((sourceDirectory in Assets).value / "js") .getPath, "min.js",                 ".js"),
+    includeFilter in cssCompress := assetFilter(((sourceDirectory in Assets).value / "css").getPath, CssCompress.suffix.value, ".css"),
 
     mappings in Universal <++= WebKeys.stage map { stageDir =>
-      val js  = stageDir / "js"     ** ("*.js" || "*.map")
-      val css = stageDir / "styles" ** ("*.css")
+      val js  = stageDir / "js"  ** ("*.js" || "*.map")
+      val css = stageDir / "css" ** ("*.css")
       (js pair rebase(stageDir, "public")) ++ (css pair rebase(stageDir, "public"))
     },
 

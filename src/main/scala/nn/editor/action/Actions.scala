@@ -10,14 +10,17 @@ import Database.dynamicSession
 import io.netty.handler.codec.http.HttpMethod
 import xitrum.validator.{Min, Range}
 
+@GET("/")              class Index    extends Action { def execute() { respondView() } }
+@GET("/viewport.html") class Viewport extends Action { def execute() { respondView() } }
+
 object Bounds {
   val lower = -100.0
   val upper =  100.0
   val diff  =  10.0
 }
 
-@GET("neuron")
-@POST("neuron")
+@GET("/neuron")
+@POST("/neuron")
 @Swagger(
   Swagger.Resource("neuron", "APIs to edit neuron configuration"),
   Swagger.Note("Bounding box should be in [-100; 100]"),

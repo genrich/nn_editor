@@ -1,0 +1,68 @@
+!!! 5
+html
+  head
+    title Neural Network Editor
+    meta(charset='utf-8')
+    meta(viewport='width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0')
+
+    link(rel='stylesheet' href={webJarsUrl("bootstrap/3.3.2/css",    "bootstrap.css",    "bootstrap.min.css")})
+    link(rel='stylesheet' href={webJarsUrl("font-awesome/4.3.0/css", "font-awesome.css", "font-awesome.min.css")})
+
+    link(rel='stylesheet' href={publicUrl("css", "styles.css", "styles.min.css")})
+
+    script(src={webJarsUrl("jquery/2.1.3",  "jquery.js",  "jquery.min.js")})
+    script(src={webJarsUrl("dat-gui/0.5.0", "dat.gui.js", "dat.gui.min.js")})
+
+    script(src={publicUrl("js/lib/tween", "tween.js", "tween.min.js")})
+    script(src={publicUrl("js/lib/three", "three.js", "three.min.js")})
+    script(src={publicUrl("js/lib/observe/observe.js")})
+
+    script(src={publicUrl("js", "main.js",                "main.min.js")})
+    script(src={publicUrl("js", "Viewport.js",            "Viewport.min.js")})
+    script(src={publicUrl("js", "BoundingBoxControls.js", "BoundingBoxControls.min.js")})
+
+  body(aurelia-app="")
+    script(src={publicUrl("js/lib/system", "system.js", "system.min.js")})
+
+    :javascript
+        System.config (
+        {
+            "map":
+            {
+                "aurelia-bootstrapper":         "js/lib/aurelia/bootstrapper/index",
+                "aurelia-framework":            "js/lib/aurelia/framework/index",
+                "aurelia-logging-console":      "js/lib/aurelia/logging-console/index",
+                "aurelia-loader-default":       "js/lib/aurelia/framework/index",
+                "aurelia-binding":              "js/lib/aurelia/binding/index",
+                "aurelia-dependency-injection": "js/lib/aurelia/dependency-injection/index",
+                "aurelia-templating":           "js/lib/aurelia/templating/index",
+                "aurelia-logging":              "js/lib/aurelia/logging/index",
+                "aurelia-loader":               "js/lib/aurelia/loader/index",
+                "aurelia-task-queue":           "js/lib/aurelia/task-queue/index",
+                "aurelia-metadata":             "js/lib/aurelia/metadata/index",
+                "aurelia-path":                 "js/lib/aurelia/path/index",
+                "aurelia-history":              "js/lib/aurelia/history/index",
+                "aurelia-history-browser":      "js/lib/aurelia/history-browser/index",
+                "aurelia-router":               "js/lib/aurelia/router/index",
+                "aurelia-route-recognizer":     "js/lib/aurelia/route-recognizer/index",
+                "aurelia-event-aggregator":     "js/lib/aurelia/event-aggregator/index",
+                "core-js":                      "js/lib/core/core",
+                "webcomponents":                "js/lib/webcomponents/webcomponents",
+
+                "js/lib/aurelia/bootstrapper/index":
+                {
+                    "aurelia-event-aggregator":     "js/lib/aurelia/event-aggregator/index",
+                    "aurelia-framework":            "js/lib/aurelia/framework/index",
+                    "aurelia-history":              "js/lib/aurelia/history/index",
+                    "aurelia-history-browser":      "js/lib/aurelia/history-browser/index",
+                    "aurelia-loader-default":       "js/lib/aurelia/loader-default/index",
+                    "aurelia-logging-console":      "js/lib/aurelia/logging-console/index",
+                    "aurelia-router":               "js/lib/aurelia/router/index",
+                    "aurelia-templating":           "js/lib/aurelia/templating/index",
+                    "aurelia-templating-binding":   "js/lib/aurelia/templating-binding/index",
+                    "aurelia-templating-resources": "js/lib/aurelia/templating-resources/index",
+                    "aurelia-templating-router":    "js/lib/aurelia/templating-router/index"
+                },
+            }
+        });
+        System.import('aurelia-bootstrapper');
