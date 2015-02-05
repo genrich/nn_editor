@@ -1,4 +1,4 @@
-function Viewport (container)
+function ViewportA (container)
 {
     "use strict";
 

@@ -1,3 +1,7 @@
-export class ViewportTmp
+export class Viewport
 {
+    attached ()
+    {
+        main ();
+    }
 }

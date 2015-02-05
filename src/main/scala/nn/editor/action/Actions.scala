@@ -10,8 +10,7 @@ import Database.dynamicSession
 import io.netty.handler.codec.http.HttpMethod
 import xitrum.validator.{Min, Range}
 
-@GET("/")              class Index    extends Action { def execute() { respondView() } }
-@GET("/viewport.html") class Viewport extends Action { def execute() { respondView() } }
+@GET("/") class Index extends Action { def execute() { respondView() }}
 
 object Bounds {
   val lower = -100.0

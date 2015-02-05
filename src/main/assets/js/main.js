@@ -9,7 +9,7 @@ function main ()
         throw 'WebGL not supported';
     }
 
-    var viewport = new Viewport ($('#viewport'));
+    var viewport = new ViewportA ($('#viewport'));
 
     $.getJSON ('neuron', function (data)
     {
