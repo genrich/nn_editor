@@ -4,12 +4,15 @@ import java.io.File
 import java.io.PrintWriter
 import scala.slick.driver.JdbcProfile
 import scala.slick.driver.PostgresDriver
+import org.json4s.JsonAST.JValue
 
 case class Point(val x: Double, val y: Double, val z: Double)
 
 case class Box(val minCorner: Point, val maxCorner: Point)
 
 case class Neuron(val id: Option[Int], val name: String, val boundingBox: Box, val nodeCount: Int, val factor: Double)
+
+case class Stimulus(val id: Option[Int], val name: String, val param: JValue)
 
 class NeuronDAO(val driver: JdbcProfile) {
   import driver.simple._
@@ -41,13 +44,30 @@ class NeuronDAO(val driver: JdbcProfile) {
   def += (value: Neuron)(implicit session: Session) = neurons += value
 }
 
+class StimulusDAO(val driver: Postgres94Driver) {
+  import driver.simple._
+
+  class Stimuli(tag: Tag) extends Table[Stimulus](tag, "STIMULI") {
+    def id    = column[Int]   ("ID", O.PrimaryKey, O.AutoInc)
+    def name  = column[String]("NAME")
+    def param = column[JValue]("PARAM")
+
+    def * = (id.?, name, param) <> (Stimulus.tupled, Stimulus.unapply)
+  }
+
+  val stimuli = TableQuery[Stimuli]
+
+  val ddl = stimuli.ddl
+}
+
 object DDLS {
   def main(args: Array[String]) {
     val file = new File(args(0))
     new File(file.getParent).mkdirs
-    val contents = new NeuronDAO(PostgresDriver).ddl.createStatements.mkString(";\n")
-    val writer   = new PrintWriter(file)
-    writer write contents
+    val writer = new PrintWriter(file)
+    writer write ((new NeuronDAO  (PostgresDriver)  .ddl.createStatements ++
+                   new StimulusDAO(Postgres94Driver).ddl.createStatements).
+                  mkString(";\n") ++ ";")
     writer.close
   }
 }

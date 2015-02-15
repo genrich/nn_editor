@@ -2,13 +2,15 @@ package nn.editor.action
 
 import xitrum.annotation.{Swagger, GET, POST}
 import xitrum.{Action, SkipCsrfCheck}
-import nn.editor.model.{Neuron, Box, Point, NeuronDAO}
+import nn.editor.model.{Neuron, Box, Point, NeuronDAO, StimulusDAO}
 import scala.slick.driver.PostgresDriver.simple._
 import java.net.URI
 import scala.slick.driver.PostgresDriver
 import Database.dynamicSession
 import io.netty.handler.codec.http.HttpMethod
 import xitrum.validator.{Min, Range}
+import nn.editor.model.Postgres94Driver
+import scala.slick.jdbc.JdbcBackend.DatabaseDef
 
 @GET("/") class Index extends Action { def execute() { respondView() }}
 
@@ -16,6 +18,16 @@ object Bounds {
   val lower = -100.0
   val upper =  100.0
   val diff  =  10.0
+}
+
+object DB extends DatabaseDef {
+  val dbUri    = new URI(System.getenv("DATABASE_URL"))
+  val username = dbUri.getUserInfo.split(":")(0)
+  val password = dbUri.getUserInfo.split(":")(1)
+  val dbUrl    = s"jdbc:postgresql://${dbUri.getHost}${dbUri.getPath}?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"
+  val db       = Database.forURL(dbUrl, username, password, driver = "org.postgresql.Driver")
+
+  def createConnection() = db.createConnection()
 }
 
 @GET("/neuron")
@@ -28,12 +40,6 @@ object Bounds {
   Swagger.Summary("Neuron generative model configurator")
 )
 class NeuronApi extends Action with SkipCsrfCheck {
-  val dbUri    = new URI(System.getenv("DATABASE_URL"))
-  val username = dbUri.getUserInfo.split(":")(0)
-  val password = dbUri.getUserInfo.split(":")(1)
-  val dbUrl    = s"jdbc:postgresql://${dbUri.getHost}${dbUri.getPath}?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"
-
-  val db  = Database.forURL(dbUrl, username, password, driver = "org.postgresql.Driver")
   val dao = new NeuronDAO(PostgresDriver)
 
   def execute {
@@ -57,16 +63,32 @@ class NeuronApi extends Action with SkipCsrfCheck {
 
           Range(0.5, 1.0).exception("factor", factor)
 
-          db.withDynSession {
+          DB.withDynSession {
             (for (n <- dao.neurons if n.id === id) yield n).update (neuron)
           }
         case _ =>
       }
       respondText("")
     } else {
-      db.withDynSession {
+      DB.withDynSession {
         respondJson(dao.neurons.first)
       }
+    }
+  }
+}
+
+@GET("/stimulus")
+@Swagger(
+  Swagger.Resource("stimulus", "APIs to edit stimulus configuration"),
+  Swagger.Produces("application/json"),
+  Swagger.Response(200, "Stimulus configuration")
+)
+class StimulusApi extends Action with SkipCsrfCheck {
+  val dao = new StimulusDAO(Postgres94Driver)
+
+  def execute {
+    DB.withDynSession {
+      respondJson(dao.stimuli.first)
     }
   }
 }

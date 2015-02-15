@@ -29,18 +29,18 @@ lazy val nn_editor = (project in file(".")).
     EclipseKeys.withSource := true,
 
     libraryDependencies    := Seq(
-      "org.postgresql"     %  "postgresql"      % "9.3-1102-jdbc41" % Runtime,
-      "com.typesafe.slick" %% "slick"           % "2.1.0",
-      "tv.cntt"            %% "xitrum"          % "3.22",
-      "tv.cntt"            %% "xitrum-scalate"  % "2.3",
-      "ch.qos.logback"     %  "logback-classic" % "1.1.2",
-      "com.h2database"     %  "h2"              % "1.4.184"         % Test,
-      "org.scalatest"      %% "scalatest"       % "2.2.1"           % Test,
-      "org.webjars"        %  "mousetrap"       % "1.4.6",
-      "org.webjars"        %  "notifyjs"        % "0.3.2",
-      "org.webjars"        %  "dat-gui"         % "0.5.0",
-      "org.webjars"        %  "font-awesome"    % "4.3.0-1",
-      "org.webjars"        %  "bootstrap"       % "3.3.2"
+      "org.postgresql"      %  "postgresql"      % "9.4-1200-jdbc41" % Runtime,
+      "com.typesafe.slick"  %% "slick"           % "2.1.0",
+      "com.github.tminglei" %% "slick-pg"        % "0.8.1",
+      "tv.cntt"             %% "xitrum"          % "3.22",
+      "tv.cntt"             %% "xitrum-scalate"  % "2.3",
+      "com.h2database"      %  "h2"              % "1.4.184"         % Test,
+      "org.scalatest"       %% "scalatest"       % "2.2.1"           % Test,
+      "org.webjars"         %  "mousetrap"       % "1.4.6",
+      "org.webjars"         %  "notifyjs"        % "0.3.2",
+      "org.webjars"         %  "dat-gui"         % "0.5.0",
+      "org.webjars"         %  "font-awesome"    % "4.3.0-1",
+      "org.webjars"         %  "bootstrap"       % "3.3.2"
     ),
 
     pipelineStages := Seq(cssCompress, uglify),
